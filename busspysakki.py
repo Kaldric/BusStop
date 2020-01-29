@@ -52,7 +52,7 @@ while True:
     found.clear()
 
     currentTime = currentTime[11:16]
-    print("Kello on: ", currentTime, " ja valitsit pysäkin: ", stopName)
+    print("Kello on: ", currentTime)
     minTime = int(currentTime[0:2]) * 60 + int(currentTime[3:6])
     for data in dictio:
         onwardCalls = data['monitoredVehicleJourney']['onwardCalls']
@@ -63,7 +63,7 @@ while True:
                 expectedArrival = expectedArrival[11:16]
                 minArrival = int(expectedArrival[0:2]) * 60 + int(expectedArrival[3:5])
                 minErotus = (minArrival - minTime)
-                foundOne = str("{:03}".format(minErotus)) + " minuutin päästä bussi (" + str(busNumber) + ") on pysäkillä kello: " + str(expectedArrival)
+                foundOne =   "{:5} bussi numero {:2} on pysäkillä {}. {} minuuttia jäljellä.".format(str(expectedArrival), str(busNumber), stopName, str(minErotus)) 
                 foundOne = str(foundOne)
                 found.append(foundOne)
 

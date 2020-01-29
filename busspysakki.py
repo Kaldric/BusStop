@@ -63,7 +63,7 @@ while True:
                 expectedArrival = expectedArrival[11:16]
                 minArrival = int(expectedArrival[0:2]) * 60 + int(expectedArrival[3:5])
                 minErotus = (minArrival - minTime)
-                foundOne =   "{:5} bussi numero {:2} on pysäkillä {}. {} minuuttia jäljellä.".format(str(expectedArrival), str(busNumber), stopName, str(minErotus)) 
+                foundOne =   "{:5} bussi numero {:2} on pysäkillä {}. {:3} minuuttia jäljellä.".format(str(expectedArrival), str(busNumber), stopName, str(minErotus)) 
                 foundOne = str(foundOne)
                 found.append(foundOne)
 

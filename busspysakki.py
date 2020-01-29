@@ -2,6 +2,8 @@ import requests
 import json
 
 
+oldWantedStop = ""
+
 while True:
     r = requests.get("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")
     restop = requests.get("http://data.itsfactory.fi/journeys/api/1/stop-points")
@@ -14,14 +16,22 @@ while True:
     stopPoint = ""
     stopName = ""
 
-    wantedStop = input("Syötä pysäkin nimi tai 'poistu': \n")
+    
+
+    wantedStop = input("Pelkällä enterillä päivität vanhan haun. \nSyötä pysäkin nimi tai 'poistu': ")
     if wantedStop.upper() == "KESKUSTORI":
         wantedStop = input("Tarvitaan tarkennus, syötä Keskustorin lisäksi pysäkin kirjain esim. 'Keskustori M': ")
     elif wantedStop.upper() == "POISTU":
         print("Näkemiin!")
         break
-
+    elif wantedStop.upper() == "":
+        if oldWantedStop != "":
+            wantedStop = oldWantedStop
+        else:
+            print("Et voi päivittää vanhaa hakua ilman vanhaa hakua.")
+    
     stopDictio = parsed_stop['body']
+    oldWantedStop = wantedStop
 
     for stop in stopDictio:
         if stop['name'].upper() == wantedStop.upper():

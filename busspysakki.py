@@ -21,7 +21,7 @@ while True:         #koska ohjelma, eikä pelkkä script
     stopDictio.clear()      #clearataan
     stopDictio = parsed_stop['body']        #dictionary parsitusta pysäkki-datasta
 
-    wantedStop = input("Enterillä päivität vanhan haun. \nSyötä pysäkin nimi tai numero. Poistuaksesi syötä 'poistu': ")      #input 
+    wantedStop = input("Enterillä päivität vanhan haun. \nSyötä pysäkin nimi tai numero (vähintään kolme merkkiä). Poistuaksesi syötä 'poistu': ")      #input 
     if wantedStop.upper() == "POISTU":
         print("Näkemiin!")
         break
@@ -39,9 +39,10 @@ while True:         #koska ohjelma, eikä pelkkä script
             stopNumber = stop['shortName']                  #haetaan stopNumberiin pysäkin numero
 
     if stopPoint == "":                                                             #jos stopPoint on tyhjä (eli hakua ei löytynyt)
-        #for stop in stopDictio:                                                 #käy läpi koko pysäkkidatan
-            #print("{} ({})".format(stop['name'], stop['shortName']))            #printtaa koko pysäkkidatan, tarvitsee hakutoiminnon koska lista on IHAN LIIAN PITKÄ >:(
-        print("Antamaasi pysäkkiä ei löytynyt. Tarkista oikeinkirjoitus listasta.")
+        for stop in stopDictio:                                                 #käy läpi koko pysäkkidatan´
+            if (wantedStop[0:3].upper() == stop['name'][0:3].upper() or wantedStop[0:3] == stop['shortName'][0:3]):
+                print("{} ({})".format(stop['name'], stop['shortName']))            #printtaa listan lähellä kirjoitusasua olevista 
+        print("Antamaasi pysäkkiä ei löytynyt. Tarkoititko jotain ylläolevalta listalta.")
 
     parsed = r.json()                                   #parsitaan bussidataa
 

@@ -2,72 +2,70 @@ import requests
 import json
 
 
-oldWantedStop = ""
+oldWantedStop = "" #initialisoidaan vanha haku loopin ulkopuolella
 
 while True:
-    r = requests.get("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")
-    restop = requests.get("http://data.itsfactory.fi/journeys/api/1/stop-points")
+    r = requests.get("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")   #haetaan bussien data
+    restop = requests.get("http://data.itsfactory.fi/journeys/api/1/stop-points")   #haetaan pysäkkien data
 
 
-    parsed_stop = restop.json()
+    parsed_stop = restop.json()     #parsitaan pysäkkien dataa
 
-    expectedArrival = ""
-    busNumber = ""
-    stopPoint = ""
-    stopName = ""
+    expectedArrival = ""    #init odotettu saapumisaika
+    busNumber = ""          #init bussinumero
+    stopPoint = ""          #init haettu pysäkki, url
+    stopName = ""           #init haettu pysäkki nimi
 
     
 
-    wantedStop = input("Pelkällä enterillä päivität vanhan haun. \nSyötä pysäkin nimi tai 'poistu': ")
-    if wantedStop.upper() == "KESKUSTORI":
-        wantedStop = input("Tarvitaan tarkennus, syötä Keskustorin lisäksi pysäkin kirjain esim. 'Keskustori M': ")
-    elif wantedStop.upper() == "POISTU":
+    wantedStop = input("Pelkällä enterillä päivität vanhan haun. \nSyötä pysäkin nimi tai 'poistu': ")      #input 
+    if wantedStop.upper() == "POISTU":
         print("Näkemiin!")
         break
-    elif wantedStop.upper() == "":
-        if oldWantedStop != "":
-            wantedStop = oldWantedStop
+    elif wantedStop.upper() == "":              #jos uusi haku tyhjä
+        if oldWantedStop != "":                 #jos vanha haku ei ole tyhjä
+            wantedStop = oldWantedStop          #vanha hausta uusi haku
         else:
-            print("Et voi päivittää vanhaa hakua ilman vanhaa hakua.")
+            print("Et voi päivittää edeltävää hakua ilman edeltävää hakua.") 
     
-    stopDictio = parsed_stop['body']
-    oldWantedStop = wantedStop
+    stopDictio = parsed_stop['body']        #dictionary parsitusta pysäkki-datasta
+    oldWantedStop = wantedStop              #uusi haku tallennetaan vanha haku muuttujaan
 
-    for stop in stopDictio:
-        if stop['name'].upper() == wantedStop.upper():
-            stopPoint = stop['url']
-            stopName = stop['name']
+    for stop in stopDictio:                 #käydään läpi pysäkki-data
+        if stop['name'].upper() == wantedStop.upper():      #jos pysäkin nimi (caps) on sama kuin haluttu pysäkki (caps)
+            stopPoint = stop['url']                         #stopPointiin tallennetaan löydetyn pysäkin url
+            stopName = stop['name']                         #haetaan stopNameen ko. pysäkin nimi
 
-    if stopPoint == "":    
+    if stopPoint == "":                                                             #jos stopPoint on tyhjä (eli hakua ei löytynyt)
         print("Antamaasi pysäkkiä ei löytynyt. Tarkista oikeinkirjoitus.")
 
-    parsed = r.json()
+    parsed = r.json()                                   #parsitaan bussidataa
 
-    currentTime = parsed['body'][0]['recordedAtTime']
+    currentTime = parsed['body'][0]['recordedAtTime']       #haetaan bussidatasta kellonaika
 
-    dictio = {}
-    dictio = parsed['body']
+    dictio = {}                         #init dictionary bussidatalle
+    dictio = parsed['body']             #parsitaan bussidata dictionaryyn
 
-    found = []
-    found.clear()
+    found = []                          #init lista löydetyille hakutuloksille
+    found.clear()                       #alustetaan lista uutta haua varten
 
-    currentTime = currentTime[11:16]
+    currentTime = currentTime[11:16]        #otetaan bussidatasta kellonaika päiväyksestä
     print("Kello on: ", currentTime)
-    minTime = int(currentTime[0:2]) * 60 + int(currentTime[3:6])
-    for data in dictio:
-        onwardCalls = data['monitoredVehicleJourney']['onwardCalls']
-        for call in onwardCalls:
-            if call['stopPointRef'] == stopPoint:
-                busNumber = data['monitoredVehicleJourney']['lineRef']
-                expectedArrival = call['expectedArrivalTime']
-                expectedArrival = expectedArrival[11:16]
-                minArrival = int(expectedArrival[0:2]) * 60 + int(expectedArrival[3:5])
-                minErotus = (minArrival - minTime)
-                foundOne =   "{:5} bussi numero {:2} on pysäkillä {}. {:3} minuuttia jäljellä.".format(str(expectedArrival), str(busNumber), stopName, str(minErotus)) 
-                foundOne = str(foundOne)
-                found.append(foundOne)
+    minTime = int(currentTime[0:2]) * 60 + int(currentTime[3:6])    # muutetaan kellonaika minuuteiksi vertailua varten
+    for data in dictio:                                                 #käydään läpi bussidataa dictionaryssa
+        onwardCalls = data['monitoredVehicleJourney']['onwardCalls']     #haetaan bussien pysäkkikohtaiset ennusteet   
+        for call in onwardCalls:                                        #käydään pysäkkikohtaisia ennusteita läpi
+            if call['stopPointRef'] == stopPoint:                       #jos oikea pysäkki löytyy bussin reitiltä
+                busNumber = data['monitoredVehicleJourney']['lineRef']  #otetaan talteen bussin numero
+                expectedArrival = call['expectedArrivalTime']           #otetaan talteen ennustettu saapumisaika (päiväys)
+                expectedArrival = expectedArrival[11:16]                   #muokataan saapumisaika päiväyksestä pelkäksi kellonajaksi
+                minArrival = int(expectedArrival[0:2]) * 60 + int(expectedArrival[3:5]) #muutetaan saapumisaika (kellonaika) minuuteiksi vertailua varten
+                minErotus = (minArrival - minTime)                                      #erotetaan nykyinen kellonaika (minuutit) ennustetusta saapumisajasta (minuutit)
+                foundOne =   "{:5} bussi numero {:2} on pysäkillä {}. {:3} minuuttia jäljellä.".format(str(expectedArrival), str(busNumber), stopName, str(minErotus)) #tehdään printattava string löydetystä datasta
+                foundOne = str(foundOne)  #todnäk turha ylimääräinen ja muutenkin extra rivi
+                found.append(foundOne) #lisätään löydetty ja muotoiltu string listaan
 
-    found.sort()
+    found.sort()    #järjestetään lista saapumisjärjestykseen
 
-    for e in found:
+    for e in found: #käydään löydettyjen lista läpi ja printataan
         print(e)

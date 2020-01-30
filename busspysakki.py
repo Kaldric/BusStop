@@ -41,7 +41,7 @@ while True:         #koska ohjelma, eikä pelkkä script
     if stopPoint == "":                                                             #jos stopPoint on tyhjä (eli hakua ei löytynyt)
         for stop in stopDictio:                                                 #käy läpi koko pysäkkidatan´
             if (wantedStop[0:3].upper() == stop['name'][0:3].upper() or wantedStop[0:3] == stop['shortName'][0:3]):
-                print("{} ({})".format(stop['name'], stop['shortName']))            #printtaa listan lähellä kirjoitusasua olevista 
+                print("{} ({})".format(stop['name'], stop['shortName']))            #printtaa listan lähellä kirjoitusasua olevista, 3 merkkiä
         print("Antamaasi pysäkkiä ei löytynyt. Tarkoititko jotain ylläolevalta listalta.")
 
     parsed = r.json()                                   #parsitaan bussidataa

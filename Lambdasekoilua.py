@@ -36,11 +36,13 @@ def matchingWithStop(searchTerm, parsedStop):                                   
     return foundStop
 
 
-def notMatchingWithStop(searchTerm, parsedStop):                                                                                 #funktio(0-3 merkit searchTermistä): jos ei löydy palauttaa haun ensimmäisiin 3 merkkiin sopivat vaihtoehdot                                                                           
-    for stop in parsedStop:                                                
+def notMatchingWithStop(searchTerm, parsedStop):
+    notFounds = []                                                                                 #funktio(0-3 merkit searchTermistä): jos ei löydy palauttaa haun ensimmäisiin 3 merkkiin sopivat vaihtoehdot                                                                           
+    for stop in parsedStop['body']:                                                
             if (searchTerm[0:3].upper() == stop['name'][0:3].upper() or searchTerm[0:3] == stop['shortName'][0:3]):
-                return ("<p>{} ({})".format(stop['name'], stop['shortName'],"<br></p>"))
-    return "<p>The stop you provided was not found. Please check the spelling from the list above.</p>"
+                notFounds.append("<p>{} ({})".format(stop['name'], stop['shortName'],"<br></p>"))
+    return sortAndReturnList(notFounds) + "<p>The stop you provided was not found. Please check the spelling from the list above.</p>"
+    
 
 
 def getCurrentTime(parsedBus):
@@ -66,7 +68,10 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
                 minDifference = arrivalInMin - timeInMin
                 foundOne = "<p>At {:5} bus number {:2} will be at the stop {} ({}) in {:3} minutes.<br></p>".format(str(expectedArrival), str(busNumber), foundStop[1], foundStop[2], str(minDifference))
                 foundBuses.append(foundOne)
-    return foundBuses
+    if len(foundBuses) > 0:
+        return foundBuses 
+    else: 
+        return "Unfortunately there are no buses stopping at this stop in the near future."
   
    
 def sortAndReturnList(busesForStop):

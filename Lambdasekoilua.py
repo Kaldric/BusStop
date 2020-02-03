@@ -4,33 +4,23 @@ import requests
 CHARSET = 'UTF-8'
 
 def busStopTre(event, context):
-    searchTerm = event['searchTerm']
-    parsedBus = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")        
-    parsedStop = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/stop-points")   
+    searchTerm = event.get('body').split("=")[1]
+    searchTerm = str(searchTerm)
+    parsedBus = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")
+    parsedStop = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/stop-points")
     stopList = matchingWithStop(searchTerm, parsedStop)
     
     
     if len(stopList) > 0:
-        successbody = sortAndReturnList(busesForStop(stopList, parsedBus, getCurrentTime(parsedBus)))
-        return {
-            "statusCode": 200,
-            "body": json.dumps(str(successbody)),
-            "headers": {
-                'Content-Type': 'text/html'
-            }
+        successbody = "<html> <body> <p>" + sortAndReturnList(busesForStop(stopList, parsedBus, getCurrentTime(parsedBus))) + "<p> </body> </html>"
+        return  str(successbody)
             
-        }
+        
     
     else: 
-        failurebody = notMatchingWithStop(searchTerm, parsedStop)
-        return {
-            "statusCode": 200,
-            'body': json.dumps(str(failurebody)),
-            "headers": {
-                'Content-Type': 'text/html'
-            }
-            
-        }
+        failurebody = "<html> <body> <p>" + notMatchingWithStop(searchTerm, parsedStop) + "</p> </body> </html>"
+        return str(failurebody)
+        
     
         
 def getDatatoDictionary(url):  
@@ -80,9 +70,9 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
   
    
 def sortAndReturnList(busesForStop):
-    stringlist = "<html><body>"
+    stringlist = "<table>"
     busesForStop.sort()
     for bus in busesForStop:
-        stringlist = stringlist + bus
-    stringlist = stringlist + "</body></html>"
+        stringlist = stringlist + "<tr>" + bus + "</tr>"
+    stringlist = stringlist + "</table>"
     return stringlist

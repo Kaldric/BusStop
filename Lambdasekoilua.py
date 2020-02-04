@@ -64,19 +64,33 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
     for bus in parsedBus['body']:
         onwardCalls = bus['monitoredVehicleJourney']['onwardCalls']
         stopsAtKtori = False                                                                                                        #0-14
+        orderKtori = 0
         stopsAtTAYS = False                                                                                                         #15-19
+        orderTAYS = 0
         stopsAtBusStation = False                                                                                                   #20-21
+        orderBusStation = 0
         for call in onwardCalls:
             if call['stopPointRef'][-4:] in listOfStops:
                     if call['stopPointRef'][-4:] in listOfStops[0:15]:
                         stopsAtKtori = True
+                        orderKtori = call['order']
                     if call['stopPointRef'][-4:] in listOfStops[15:20]:
                         stopsAtTAYS = True
+                        orderTAYS = call['order']
                     if call['stopPointRef'][-4:] in listOfStops[20:22]:
                         stopsAtBusStation = True
+                        orderBusStation = call['order']
+        for call in onwardCalls:
             if call['stopPointRef'][-4:] == foundStop[0][-4:]:
                 busNumber = bus['monitoredVehicleJourney']['lineRef']
-                expectedArrival = call['expectedArrivalTime'] 
+                expectedArrival = call['expectedArrivalTime']
+                callOrder = int(call['order'])
+                if callOrder > int(orderKtori):
+                    stopsAtKtori = False
+                if callOrder > int(orderTAYS):
+                    stopsAtKtori = False
+                if callOrder > int(orderBusStation):
+                    stopsAtKtori = False
                 expectedArrival = expectedArrival[11:16] 
                 arrivalInMin = int(expectedArrival[0:2]) * 60 + int(expectedArrival[3:5])
                 minDifference = arrivalInMin - timeInMin
@@ -100,6 +114,3 @@ def sortAndReturnList(busesForStop):
         stringlist = stringlist + "<tr>" + bus + "</tr>"
     stringlist = stringlist + "</table>"
     return stringlist
-
-
-  

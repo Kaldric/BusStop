@@ -5,7 +5,7 @@ CHARSET = 'UTF-8'
 
 def busStopTre(event, context):
     searchTerm = event.get('body').split("=")[1]
-    searchTerm = str(searchTerm)
+    searchTerm = str(searchTerm).replace("+", " ")
     parsedBus = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")
     parsedStop = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/stop-points")
     stopList = matchingWithStop(searchTerm, parsedStop)

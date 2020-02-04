@@ -3,19 +3,18 @@ import requests
 
 CHARSET = 'UTF-8'
 
-listOfStops = ["0003","0036","0035","0015","0014","0010","0011","0012","0042","0002","0001","0008","0007","0005","0041","5102","5103","4998","5008","5007","0522","0523"]
+listOfStops = ["0003","0036","0035","0015","0014","0010","0011","0012","0042","0002","0001","0008","0007","0005","0041","5102","5103","4998","5008","5007","0522","0523"]               #keskustorin, taysin ja linja-autoaseman pysäkit listattu
 
 def busStopTre(event, context):
-    searchTerm = event.get('body').split("=")[1]
-    searchTerm = str(searchTerm).replace("+", " ")
+    searchTerm = event.get('body').split("=")[1]                                                                                #splitataan ja valitaan value (hakusana)
+    searchTerm = str(searchTerm).replace("+", " ")                                                                              #jotta hakusanan välit toimivat muutetaan postin muuttamat plussat takaisin väleiksi
     parsedBus = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")
     parsedStop = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/stop-points")
     stopList = matchingWithStop(searchTerm, parsedStop)   
     
     if len(stopList) == 3:
         successbody = "<html> <body> <p>" + sortAndReturnList(busesForStop(stopList, parsedBus, getCurrentTime(parsedBus))) + "<p> </body> </html>"
-        return  str(successbody)
-            
+        return  str(successbody) 
     
     else: 
         failurebody = "<html> <body> <p>" + notMatchingWithStop(searchTerm, parsedStop) + "</p> </body> </html>"
@@ -33,13 +32,13 @@ def matchingWithStop(searchTerm, parsedStop):                                   
         if (stop['name'].upper() == searchTerm.upper() or stop['shortName'] == searchTerm):
             foundStop.append(stop['url']) 
             foundStop.append(stop['name']) 
-            foundStop.append(stop['shortName'])                                                           #0 = url, 1 =  nimi, 2 = numero
+            foundStop.append(stop['shortName'])                                                                                 #0 = url, 1 =  nimi, 2 = numero
     
     return foundStop
 
 
 def notMatchingWithStop(searchTerm, parsedStop):
-    notFounds = []                                                                                 #funktio(0-3 merkit searchTermistä): jos ei löydy palauttaa haun ensimmäisiin 3 merkkiin sopivat vaihtoehdot                                                                           
+    notFounds = []                                                                                                              #funktio(0-3 merkit searchTermistä): jos ei löydy palauttaa haun ensimmäisiin 3 merkkiin sopivat vaihtoehdot                                                                           
     for stop in parsedStop['body']:                                                
             if (searchTerm[0:3].upper() == stop['name'][0:3].upper() or searchTerm[0:3] == stop['shortName'][0:3]):
                 notFounds.append("<p>{} ({})".format(stop['name'], stop['shortName'],"<br></p>"))
@@ -64,11 +63,11 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
     timeInMin = int(currentTime[0:2]) * 60 + int(currentTime[3:5])
     for bus in parsedBus['body']:
         onwardCalls = bus['monitoredVehicleJourney']['onwardCalls']
-        stopsAtKtori = False                                                                                                        #0-14
+        stopsAtKtori = False                                                                                                        #indeksit: 0-14
         orderKtori = 0
-        stopsAtTAYS = False                                                                                                         #15-19
+        stopsAtTAYS = False                                                                                                         #indeksit: 15-19
         orderTAYS = 0
-        stopsAtBusStation = False                                                                                                   #20-21
+        stopsAtBusStation = False                                                                                                   #indeksit: 20-21
         orderBusStation = 0
         for call in onwardCalls:
             if call['stopPointRef'][-4:] in listOfStops:
@@ -86,7 +85,7 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
                 busNumber = bus['monitoredVehicleJourney']['lineRef']
                 expectedArrival = call['expectedArrivalTime']
                 callOrder = int(call['order'])
-                if callOrder > int(orderKtori):
+                if callOrder > int(orderKtori):                                                                                     #verrataan pysäkkijärjestystä eli jottei keskustori näy truena, jos se on matkalla ennen katsottua pysäkkiä
                     stopsAtKtori = False
                 if callOrder > int(orderTAYS):
                     stopsAtKtori = False

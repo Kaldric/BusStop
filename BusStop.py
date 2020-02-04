@@ -28,7 +28,8 @@ def matchingWithStop(searchTerm, parsedStop):                                   
     return foundStop
 
 
-def notMatchingWithStop(searchTerm, parsedStop):                                                                                 #funktio(0-3 merkit searchTermistä): jos ei löydy palauttaa haun ensimmäisiin 3 merkkiin sopivat vaihtoehdot                                                                           
+def notMatchingWithStop(searchTerm, parsedStop):
+    searchTerm = searchTerm                                                                                 #funktio(0-3 merkit searchTermistä): jos ei löydy palauttaa haun ensimmäisiin 3 merkkiin sopivat vaihtoehdot                                                                           
     for stop in parsedStop:                                                
             if (searchTerm[0:3].upper() == stop['name'][0:3].upper() or searchTerm[0:3] == stop['shortName'][0:3]):
                 return ("{} ({})".format(stop['name'], stop['shortName']))
@@ -67,7 +68,7 @@ def sortAndReturnList(busesForStop):
         print(bus)
     
 
-print(doesitwork("Irjala"))
+
 
 
 

@@ -50,6 +50,9 @@ def getCurrentTime(parsedBus):
 
 
 def busesForStop(foundStop, parsedBus, currentTime):                                                                            #kun oikea pysäkki löytyy funktio(pysäkki): hakee bussit, jotka pysähtyvät ko. pysäkillä
+    notFoundlist = []
+    notFoundlist.clear()
+    notFoundlist.append("Unfortunately there are no buses stopping at this stop in the near future.")
     foundBuses = []
     foundBuses.clear()
     busNumber = ""
@@ -71,7 +74,7 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
     if len(foundBuses) > 0:
         return foundBuses 
     else: 
-        return "Unfortunately there are no buses stopping at this stop in the near future."
+        return notFoundlist
   
    
 def sortAndReturnList(busesForStop):

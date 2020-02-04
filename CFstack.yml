@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Stack for bus stop lambda
+
+Outputs:
+
+
+Parameters: 
+
+
+Resources:
+  BSAsS3t: 
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: callensanko
+
+  BSLambda:
+    Type: AWS::Lambda::Function
+    Properties: 
+      Code: 
+        Code
+      DeadLetterConfig: 
+        DeadLetterConfig
+      Description: String
+      Environment: 
+        Environment
+      FunctionName: String
+      Handler: String
+      KmsKeyArn: String
+      Layers: 
+        - String
+      MemorySize: Integer
+      ReservedConcurrentExecutions: Integer
+      Role: String
+      Runtime: String
+      Tags: 
+        - Tag
+      Timeout: Integer
+      TracingConfig: 
+        TracingConfig
+      VpcConfig: 
+        VpcConfig

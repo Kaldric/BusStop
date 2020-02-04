@@ -5,8 +5,6 @@ CHARSET = 'UTF-8'
 
 listOfStops = ["0003","0036","0035","0015","0014","0010","0011","0012","0042","0002","0001","0008","0007","0005","0041","5102","5103","4998","5008","5007","0522","0523"]
 
-print(listOfStops[15:19])
-
 def busStopTre(event, context):
     searchTerm = event.get('body').split("=")[1]
     searchTerm = str(searchTerm).replace("+", " ")
@@ -14,7 +12,7 @@ def busStopTre(event, context):
     parsedStop = getDatatoDictionary("http://data.itsfactory.fi/journeys/api/1/stop-points")
     stopList = matchingWithStop(searchTerm, parsedStop)   
     
-    if len(stopList) > 0:
+    if len(stopList) == 3:
         successbody = "<html> <body> <p>" + sortAndReturnList(busesForStop(stopList, parsedBus, getCurrentTime(parsedBus))) + "<p> </body> </html>"
         return  str(successbody)
             
@@ -33,7 +31,10 @@ def matchingWithStop(searchTerm, parsedStop):                                   
     foundStop.clear()
     for stop in parsedStop['body']:
         if (stop['name'].upper() == searchTerm.upper() or stop['shortName'] == searchTerm):
-            foundStop = [stop['url'], stop['name'], stop['shortName']]                                                          #0 = url, 1 =  nimi, 2 = numero
+            foundStop.append(stop['url']) 
+            foundStop.append(stop['name']) 
+            foundStop.append(stop['shortName'])                                                           #0 = url, 1 =  nimi, 2 = numero
+    
     return foundStop
 
 
@@ -42,7 +43,7 @@ def notMatchingWithStop(searchTerm, parsedStop):
     for stop in parsedStop['body']:                                                
             if (searchTerm[0:3].upper() == stop['name'][0:3].upper() or searchTerm[0:3] == stop['shortName'][0:3]):
                 notFounds.append("<p>{} ({})".format(stop['name'], stop['shortName'],"<br></p>"))
-    return sortAndReturnList(notFounds) + "<p>The stop you provided was not found. Please check the spelling from the list above or use the bus stop number.</p>"
+    return sortAndReturnList(notFounds) + "<p>The stop you provided was not found or there are multiple stops with the same name. Please check the spelling from the list above or use the bus stop number.</p>"
     
 
 

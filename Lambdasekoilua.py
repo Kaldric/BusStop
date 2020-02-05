@@ -85,13 +85,13 @@ def busesForStop(foundStop, parsedBus, currentTime):                            
                 if call['stopPointRef'][-4:] == foundStop[0][-4:]:
                     busNumber = bus['monitoredVehicleJourney']['lineRef']
                     expectedArrival = call['expectedArrivalTime']
-                    callOrder = int(call['order'])
-                    if callOrder > int(orderKtori):                                                                                     #verrataan pysäkkijärjestystä eli jottei keskustori näy truena, jos se on matkalla ennen katsottua pysäkkiä
+                    callOrder = call['order']
+                    if int(callOrder) > int(orderKtori):                                                                                     #verrataan pysäkkijärjestystä eli jottei keskustori näy truena, jos se on matkalla ennen katsottua pysäkkiä
                         stopsAtKtori = False
-                    if callOrder > int(orderTAYS):
-                        stopsAtKtori = False
-                    if callOrder > int(orderBusStation):
-                        stopsAtKtori = False
+                    if int(callOrder) > int(orderTAYS):
+                        stopsAtTAYS = False
+                    if int(callOrder) > int(orderBusStation):
+                        stopsAtBusStation = False
    
                     expectedArrival = expectedArrival[11:16] 
                     arrivalInMin = int(expectedArrival[0:2]) * 60 + int(expectedArrival[3:5])
